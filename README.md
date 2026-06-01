@@ -1,18 +1,24 @@
 # Knee Osteoarthritis Severity Detection
 
-A deep learning web application that classifies the severity of knee osteoarthritis from X-ray images, with visual explainability using Grad-CAM.
+A deep learning web application that automates the diagnosis of knee osteoarthritis (KOA) severity from X-ray images — replacing a manual, error-prone process that typically requires a trained physician and significant time.
 
-**92% diagnostic accuracy** using EfficientNetB4 across 5 KL-grade severity classes.
+**EfficientNetB4 achieved 88% accuracy** across 5 KL-grade severity classes, outperforming Xception and InceptionResNetV3 in comparative evaluation.
 
 ---
 
-## What it does
+## The Problem
 
-Upload a knee X-ray image and the app will:
-- Predict the osteoarthritis severity grade (Healthy → Severe)
-- Show confidence percentage for the prediction
-- Display a **Grad-CAM heatmap** highlighting the regions of the X-ray that influenced the prediction
-- Show a probability breakdown across all 5 classes
+Manual diagnosis of knee osteoarthritis involves a physician examining X-ray images and grading severity using the Kellgren–Lawrence (KL) system. This process requires specialist expertise, is time-consuming, and is prone to human error. This project automates that classification using deep learning.
+
+---
+
+## What the App Does
+
+Upload a knee X-ray and the Streamlit app will:
+- Predict the osteoarthritis severity grade across 5 classes
+- Display confidence percentage for the prediction
+- Generate a **Grad-CAM heatmap** highlighting which regions of the X-ray influenced the model's decision
+- Show a full probability breakdown across all severity grades
 
 ---
 
@@ -20,23 +26,32 @@ Upload a knee X-ray image and the app will:
 
 | Grade | Label | Description |
 |-------|-------|-------------|
-| 0 | Healthy | No osteoarthritis |
-| 1 | Doubtful | Possible narrowing |
-| 2 | Minimal | Definite narrowing |
-| 3 | Moderate | Multiple osteophytes |
+| 0 | Healthy | No signs of osteoarthritis |
+| 1 | Doubtful | Possible joint space narrowing |
+| 2 | Minimal | Definite narrowing, possible osteophytes |
+| 3 | Moderate | Multiple osteophytes, definite narrowing |
 | 4 | Severe | Large osteophytes, severe narrowing |
+
+---
+
+## Dataset
+
+- **Source:** Osteoarthritis Initiative (OAI) dataset via [Kaggle](https://www.kaggle.com/datasets/shashwatwork/knee-osteoarthritis-dataset-with-severity)
+- **Total images:** 8,000 pre-classified X-ray images
+- **Classes:** 5 (Healthy, Doubtful, Minimal, Moderate, Severe)
+- **Augmentation:** Brightness adjustment, width shift, horizontal flip, zoom range
 
 ---
 
 ## Models Compared
 
-| Model | Accuracy |
-|-------|----------|
-| **EfficientNetB4** | **92%** ✅ Best |
-| Xception | - |
-| InceptionV3 | - |
+| Model | Result |
+|-------|--------|
+| **EfficientNetB4** | **88% accuracy ✅ Best** |
+| InceptionResNetV3 | Lower accuracy |
+| XceptionNet | Lower accuracy |
 
-EfficientNetB4 was selected as the final model based on validation accuracy.
+EfficientNetB4 was selected as the final model based on accuracy and evaluation metrics across all 5 classes.
 
 ---
 
@@ -44,27 +59,9 @@ EfficientNetB4 was selected as the final model based on validation accuracy.
 
 - **Python 3.9**
 - **TensorFlow 2.10**
-- **Streamlit** — web application
-- **Grad-CAM** — explainability / heatmap visualisation
+- **Streamlit** — interactive web application
+- **Grad-CAM** — visual explainability / heatmap overlay
 - **Matplotlib, NumPy, Pandas, Scikit-learn**
-
----
-
-## Project Structure
-
-```
-├── src/
-│   └── models/
-│       └── efficientnetb4(1).hdf5       # Trained model weights
-├── app/
-│   └── img/                             # App assets
-├── EfficientNetB4__final_.ipynb         # Final model training notebook
-├── xception_final.ipynb                 # Xception comparison
-├── test_inceptionv3final__1_.ipynb      # InceptionV3 comparison
-├── app.py                               # Streamlit web app
-├── environment.yml                      # Conda environment
-└── README.md
-```
 
 ---
 
@@ -87,17 +84,12 @@ conda activate "knee osteoarthritis diagnosis"
 streamlit run app.py
 ```
 
----
-
-## Dataset
-
-X-ray images sourced from the [Knee Osteoarthritis Dataset on Kaggle](https://www.kaggle.com/datasets/shashwatwork/knee-osteoarthritis-dataset-with-severity).  
-Images are graded using the Kellgren-Lawrence (KL) scale.
+> **Note:** The trained model file (`efficientnetb4(1).hdf5`) is not included in the repo due to file size. You can retrain using `EfficientNetB4__final_.ipynb` or download the weights separately.
 
 ---
 
 ## Results
 
-The EfficientNetB4 model achieved **92% accuracy** on the test set, outperforming Xception and InceptionV3 architectures tested during model selection.
+EfficientNetB4 achieved **88% test accuracy** on the OAI dataset, evaluated using accuracy, loss, balanced accuracy score, and per-class validation metrics.
 
-The Grad-CAM visualisation confirms the model focuses on clinically relevant regions of the knee joint — joint space narrowing and osteophyte formation areas.
+The Grad-CAM visualisation confirms the model focuses on clinically relevant regions — joint space narrowing and osteophyte formation areas — consistent with how a physician would interpret the X-ray.
